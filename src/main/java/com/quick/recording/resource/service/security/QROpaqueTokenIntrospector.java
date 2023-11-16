@@ -111,10 +111,24 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
                 .email((String)claims.get("email"))
                 .locale((String)claims.get("locale"))
                 .provider(AuthProvider.valueOf((String)claims.get("provider")))
-                .gender(Gender.valueOf((String)claims.get("gender")))
+                .gender(getGender(claims.get("gender")))
                 .phoneNumber((String)claims.get("phoneNumber"))
                 .active((Boolean) claims.get("active"))
-                .birthDay(LocalDate.parse((String)claims.get("birthDay")))
+                .birthDay(getBirthDay(claims.get("birthDay")))
                 .build();
+    }
+
+    private LocalDate getBirthDay(Object birthDay) {
+        if(Objects.nonNull(birthDay)){
+            return LocalDate.parse((String)birthDay);
+        }
+        return null;
+    }
+
+    private Gender getGender(Object gender) {
+        if(Objects.nonNull(gender)) {
+            return Gender.valueOf((String)gender);
+        }
+        return Gender.NOT_DEFINED;
     }
 }

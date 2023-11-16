@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,11 +20,12 @@ import java.util.Objects;
 @Log4j2
 public class ResourceServerProperties {
 
+    @Value("${spring.application.name}")
+    private String username;
     private String clientId;
     private String clientSecret;
     private String introspectionUri;
     private String ssoUrl;
-    private String username;
     private Boolean customAuth;
 
     @Autowired
