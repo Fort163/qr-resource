@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -25,9 +26,9 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private Converter<String, RequestEntity<?>> requestEntityConverter;
     private RestTemplate restTemplate = new RestTemplate();
-    private final ResourceServerProperties resourceServerProperties;
+    private final ResourceServicePropertiesInterface resourceServerProperties;
 
-    public QROpaqueTokenIntrospector(ResourceServerProperties resourceServerProperties) throws URISyntaxException {
+    public QROpaqueTokenIntrospector(ResourceServicePropertiesInterface resourceServerProperties) throws URISyntaxException {
         this.resourceServerProperties = resourceServerProperties;
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(this.resourceServerProperties.getClientId(), this.resourceServerProperties.getClientSecret()));
         this.requestEntityConverter = this.defaultRequestEntityConverter(new URI(this.resourceServerProperties.getIntrospectionUri()));
@@ -105,6 +106,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         return QROAuth2AuthenticatedPrincipal.builder()
                 .attributes(claims)
                 .authorities(authorities)
+                .uuid(UUID.fromString((String)claims.get("uuid")))
                 .name((String)claims.get("name"))
                 .fullName((String)claims.get("fullName"))
                 .userpic((String)claims.get("userpic"))
@@ -120,7 +122,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private LocalDate getBirthDay(Object birthDay) {
         if(Objects.nonNull(birthDay)){
-            return LocalDate.parse((String)birthDay);
+            return LocalDate.parse((String)birthDay, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         }
         return null;
     }

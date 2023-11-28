@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ResourceServerConfig {
 
     private final QROpaqueTokenIntrospector qrOpaqueTokenIntrospector;
-    private final ResourceServerProperties resourceServerProperties;
+    private final ResourceServicePropertiesInterface resourceServerProperties;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

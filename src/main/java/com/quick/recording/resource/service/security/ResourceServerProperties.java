@@ -10,15 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Objects;
 
+@Lazy
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver.opaquetoken")
 @Setter
 @Getter
 @Configuration
 @Log4j2
-public class ResourceServerProperties {
+public class ResourceServerProperties implements ResourceServicePropertiesInterface{
 
     @Value("${spring.application.name}")
     private String username;

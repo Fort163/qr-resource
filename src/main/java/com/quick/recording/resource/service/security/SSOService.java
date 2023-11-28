@@ -17,9 +17,9 @@ import java.util.Map;
 public class SSOService {
 
     private RestTemplate restTemplate;
-    private final ResourceServerProperties resourceServerProperties;
+    private final ResourceServicePropertiesInterface resourceServerProperties;
 
-    public SSOService(ResourceServerProperties resourceServerProperties) throws URISyntaxException {
+    public SSOService(ResourceServicePropertiesInterface resourceServerProperties) throws URISyntaxException {
         this.resourceServerProperties = resourceServerProperties;
         restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(this.resourceServerProperties.getClientId(), this.resourceServerProperties.getClientSecret()));

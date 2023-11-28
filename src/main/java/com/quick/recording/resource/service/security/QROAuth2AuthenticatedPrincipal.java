@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -17,6 +18,7 @@ public class QROAuth2AuthenticatedPrincipal implements OAuth2AuthenticatedPrinci
 
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
+    private UUID uuid;
     private String name;
     private String fullName;
     private String userpic;
