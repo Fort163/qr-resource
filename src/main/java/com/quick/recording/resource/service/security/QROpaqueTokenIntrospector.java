@@ -122,7 +122,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private LocalDate getBirthDay(Object birthDay) {
         if(Objects.nonNull(birthDay)){
-            return LocalDate.parse((String)birthDay, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+            return LocalDate.parse((String)birthDay, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         return null;
     }
