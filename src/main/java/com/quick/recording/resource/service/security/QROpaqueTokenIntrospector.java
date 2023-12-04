@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.introspection.BadOpaqueTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionException;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.stereotype.Component;
@@ -41,9 +42,6 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
             throw new OAuth2IntrospectionException("requestEntityConverter returned a null entity");
         } else {
             ResponseEntity<Map<String, Object>> responseEntity = this.makeRequest(requestEntity);
-            if(Objects.isNull(responseEntity.getBody())){
-                throw new OAuth2IntrospectionException("SSO service blocked the token");
-            }
             return this.customConvert(responseEntity.getBody());
         }
     }
@@ -53,7 +51,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
             return this.restTemplate.exchange(requestEntity, new ParameterizedTypeReference<Map<String, Object>>() {
             });
         } catch (Exception var3) {
-            throw new OAuth2IntrospectionException(var3.getMessage(), var3);
+            throw new BadOpaqueTokenException(var3.getMessage(), var3);
         }
     }
 

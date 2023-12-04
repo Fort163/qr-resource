@@ -1,6 +1,6 @@
 package com.quick.recording.resource.service.security;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -8,18 +8,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.util.Objects;
 
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity
 public class ResourceServerConfig {
 
     private final QROpaqueTokenIntrospector qrOpaqueTokenIntrospector;
     private final ResourceServicePropertiesInterface resourceServerProperties;
+    private final AccessDeniedHandler accessDeniedHandler;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,9 +37,12 @@ public class ResourceServerConfig {
                     }
                 });
         http.oauth2ResourceServer(config -> {
-            config.opaqueToken().introspector(qrOpaqueTokenIntrospector);
+            config.opaqueToken(token ->{
+                token.introspector(qrOpaqueTokenIntrospector);
+            });
+            config.authenticationEntryPoint(authenticationEntryPoint);
+            config.accessDeniedHandler(accessDeniedHandler);
         });
-        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
         return http.build();
     }
 
