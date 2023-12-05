@@ -1,5 +1,6 @@
 package com.quick.recording.resource.service.interceptor;
 
+import com.quick.recording.resource.service.anatation.WithServerAuth;
 import com.quick.recording.resource.service.security.SSOService;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -23,9 +24,10 @@ public class AuthInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
+        boolean isServerAuth = Objects.nonNull(requestTemplate.methodMetadata().method().getAnnotation(WithServerAuth.class));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String tokenString = "Bearer ";
-        if(Objects.nonNull(authentication) && authentication.getCredentials() instanceof OAuth2AccessToken){
+        if(!isServerAuth && Objects.nonNull(authentication) && authentication.getCredentials() instanceof OAuth2AccessToken){
             OAuth2AccessToken token = (OAuth2AccessToken)authentication.getCredentials();
             tokenString += token.getTokenValue();
         }
