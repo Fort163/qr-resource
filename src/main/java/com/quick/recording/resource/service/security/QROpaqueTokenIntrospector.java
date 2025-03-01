@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +34,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     public QROpaqueTokenIntrospector(ResourceServicePropertiesInterface resourceServerProperties) throws URISyntaxException {
         this.resourceServerProperties = resourceServerProperties;
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(this.resourceServerProperties.getClientId(), this.resourceServerProperties.getClientSecret()));
-        this.requestEntityConverter = this.defaultRequestEntityConverter(new URI(this.resourceServerProperties.getIntrospectionUri()));
+        this.requestEntityConverter = this.defaultRequestEntityConverter();
     }
 
     @Override
@@ -55,28 +57,19 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         }
     }
 
-    private Converter<String, RequestEntity<?>> defaultRequestEntityConverter(URI introspectionUri) {
+    private Converter<String, RequestEntity<?>> defaultRequestEntityConverter() {
         return (token) -> {
-            HttpHeaders headers;
-            if(token.contains("--0--")){
-                String[] split = token.split("--0--");
-                token = split[1];
-                headers = this.requestHeaders(split[0]);
-            }
-            else {
-                headers = this.requestHeaders();
-            }
+            HttpHeaders headers = this.requestHeaders();
             MultiValueMap<String, String> body = this.requestBody(token);
-            return new RequestEntity(body, headers, HttpMethod.POST, introspectionUri);
+            return new RequestEntity(body, headers, HttpMethod.POST, URI.create(this.resourceServerProperties.getIntrospectionUri()));
         };
     }
 
-    private HttpHeaders requestHeaders(){
-        return this.requestHeaders(null);
-    }
-
-    private HttpHeaders requestHeaders(String username) {
+    private HttpHeaders requestHeaders() {
         HttpHeaders headers = new HttpHeaders();
+        String username =
+                ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                        .getRequest().getHeader("username");
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         if(Objects.isNull(username)) {
             headers.add("username", this.resourceServerProperties.getUsername());

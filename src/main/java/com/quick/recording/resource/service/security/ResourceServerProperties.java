@@ -1,6 +1,7 @@
 package com.quick.recording.resource.service.security;
 
 import com.netflix.discovery.EurekaClient;
+import com.netflix.discovery.shared.Application;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,15 +27,12 @@ public class ResourceServerProperties implements ResourceServicePropertiesInterf
     private String username;
     private String clientId;
     private String clientSecret;
-    private String introspectionUri;
-    private String ssoUrl;
+    private EurekaClient discoveryClient;
     private Boolean customAuth;
 
     @Autowired
     public ResourceServerProperties(EurekaClient discoveryClient) {
-        String homePageUrl = discoveryClient.getApplications().getRegisteredApplications("AUTH-SERVICE").getInstancesAsIsFromEureka().stream().findFirst().get().getHomePageUrl();
-        ssoUrl = homePageUrl;
-        introspectionUri = homePageUrl+"oauth2/token-info";
+        this.discoveryClient = discoveryClient;
     }
 
     @PostConstruct
@@ -55,6 +53,14 @@ public class ResourceServerProperties implements ResourceServicePropertiesInterf
         if(Strings.isEmpty(param)){
             log.error("\n\t\t\tParam spring.security.oauth2.resourceserver.opaquetoken :"+name+" not set resource server not work!\n");
         }
+    }
+
+    public String getIntrospectionUri() {
+        return getSsoUrl() + "oauth2/token-info";
+    }
+
+    public String getSsoUrl() {
+        return discoveryClient.getApplication("AUTH-SERVICE").getInstancesAsIsFromEureka().stream().findFirst().orElseThrow().getHomePageUrl();
     }
 
 }

@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -21,10 +23,13 @@ import java.util.Objects;
 public class AuthInterceptor implements RequestInterceptor {
 
     private final SSOService ssoService;
+    public static final String WITH_SERVER_AUTH = "WithServerAuth";
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        boolean isServerAuth = Objects.nonNull(requestTemplate.methodMetadata().method().getAnnotation(WithServerAuth.class));
+        Object attribute = Objects.requireNonNull(RequestContextHolder.getRequestAttributes())
+                .getAttribute(WITH_SERVER_AUTH, RequestAttributes.SCOPE_REQUEST);
+        boolean isServerAuth = Objects.nonNull(attribute) && Boolean.parseBoolean(attribute.toString());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String tokenString = "Bearer ";
         if(!isServerAuth && Objects.nonNull(authentication) && authentication.getCredentials() instanceof OAuth2AccessToken){
@@ -33,7 +38,9 @@ public class AuthInterceptor implements RequestInterceptor {
         }
         else {
             try {
-                tokenString += ssoService.getToken();
+                SSOService.SSOResult ssoResult = ssoService.getSSOResult();
+                tokenString += ssoResult.token();
+                requestTemplate.header("username",ssoResult.userName());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (AuthorizationServiceException e) {
