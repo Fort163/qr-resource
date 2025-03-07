@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class QROAuth2AuthenticatedPrincipal implements OAuth2AuthenticatedPrincipal{
+public class QROAuth2AuthenticatedPrincipal implements OAuth2AuthenticatedPrincipal {
 
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;

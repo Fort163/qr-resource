@@ -1,7 +1,5 @@
 package com.quick.recording.resource.service.security;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
@@ -28,10 +26,10 @@ public class SSOService {
     }
 
     public SSOResult getSSOResult() throws URISyntaxException, AuthorizationServiceException {
-        RequestEntity<?> requestEntity = createRequest(new URI(this.resourceServerProperties.getSsoUrl()+"oauth2/token?grant_type=client_credentials"));
+        RequestEntity<?> requestEntity = createRequest(new URI(this.resourceServerProperties.getSsoUrl() + "oauth2/token?grant_type=client_credentials"));
         ResponseEntity<Map<String, Object>> responseEntity = this.makeRequest(requestEntity);
-        if(responseEntity.hasBody()){
-            String access_token = (String)responseEntity.getBody().get("access_token");
+        if (responseEntity.hasBody()) {
+            String access_token = (String) responseEntity.getBody().get("access_token");
             return new SSOResult(this.resourceServerProperties.getUsername(), access_token);
         }
         throw new AuthorizationServiceException("SSOService cant get token!");

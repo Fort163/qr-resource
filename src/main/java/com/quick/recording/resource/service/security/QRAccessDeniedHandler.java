@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,7 +27,7 @@ public class QRAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        String message = accessDeniedException.getMessage() + " - " +request.getServletPath();
+        String message = accessDeniedException.getMessage() + " - " + request.getServletPath();
         ApiError build = ApiError.builder().message(message).service(serviceName).build();
         response.setStatus(HttpStatus.FORBIDDEN.value());
         ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);

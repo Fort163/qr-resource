@@ -20,7 +20,7 @@ public class WithServerAuthAspect {
 
     @Before("@annotation(com.quick.recording.resource.service.anatation.WithServerAuth)")
     public void beforeMethod(JoinPoint jp) {
-        Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute(WITH_SERVER_AUTH,true, SCOPE_REQUEST);
+        Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute(WITH_SERVER_AUTH, true, SCOPE_REQUEST);
     }
 
     @After("@annotation(com.quick.recording.resource.service.anatation.WithServerAuth)")

@@ -3,16 +3,19 @@ package com.quick.recording.resource.service.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.util.Objects;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,8 +29,8 @@ public class ResourceServerConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    public SecurityFilterChain securityApiFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/**").sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(customizer -> {
                     if(Objects.isNull(resourceServerProperties.getCustomAuth()) || !resourceServerProperties.getCustomAuth()) {
                         customizer.anyRequest().authenticated();
@@ -37,7 +40,7 @@ public class ResourceServerConfig {
                     }
                 });
         http.oauth2ResourceServer(config -> {
-            config.opaqueToken(token ->{
+            config.opaqueToken(token -> {
                 token.introspector(qrOpaqueTokenIntrospector);
             });
             config.authenticationEntryPoint(authenticationEntryPoint);

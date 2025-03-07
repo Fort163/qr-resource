@@ -1,7 +1,6 @@
 package com.quick.recording.resource.service.security;
 
 import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.shared.Application;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,7 @@ import java.util.Objects;
 @Getter
 @Configuration
 @Log4j2
-public class ResourceServerProperties implements ResourceServicePropertiesInterface{
+public class ResourceServerProperties implements ResourceServicePropertiesInterface {
 
     @Value("${spring.application.name}")
     private String username;
@@ -36,22 +35,22 @@ public class ResourceServerProperties implements ResourceServicePropertiesInterf
     }
 
     @PostConstruct
-    private void checkParams(){
-        checkParam(clientId,"clientId");
-        checkParam(clientSecret,"clientSecret");
-        checkParam(username,"username");
-        checkParam(customAuth,"customAuth");
+    private void checkParams() {
+        checkParam(clientId, "clientId");
+        checkParam(clientSecret, "clientSecret");
+        checkParam(username, "username");
+        checkParam(customAuth, "customAuth");
     }
 
-    private void checkParam(Boolean param, String name){
-        if(Objects.isNull(param)){
-            log.warn("\n\t\t\tParam spring.security.oauth2.resourceserver.opaquetoken : "+name+" not set resource use default settings - anyRequest().authenticated()!\n");
+    private void checkParam(Boolean param, String name) {
+        if (Objects.isNull(param)) {
+            log.warn("\n\t\t\tParam spring.security.oauth2.resourceserver.opaquetoken : " + name + " not set resource use default settings - anyRequest().authenticated()!\n");
         }
     }
 
-    private void checkParam(String param, String name){
-        if(Strings.isEmpty(param)){
-            log.error("\n\t\t\tParam spring.security.oauth2.resourceserver.opaquetoken :"+name+" not set resource server not work!\n");
+    private void checkParam(String param, String name) {
+        if (Strings.isEmpty(param)) {
+            log.error("\n\t\t\tParam spring.security.oauth2.resourceserver.opaquetoken :" + name + " not set resource server not work!\n");
         }
     }
 

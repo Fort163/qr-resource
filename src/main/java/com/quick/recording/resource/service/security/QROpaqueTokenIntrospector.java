@@ -39,7 +39,7 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
-        RequestEntity<?> requestEntity = (RequestEntity)this.requestEntityConverter.convert(token);
+        RequestEntity<?> requestEntity = (RequestEntity) this.requestEntityConverter.convert(token);
         if (requestEntity == null) {
             throw new OAuth2IntrospectionException("requestEntityConverter returned a null entity");
         } else {
@@ -71,10 +71,9 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
                 ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
                         .getRequest().getHeader("username");
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        if(Objects.isNull(username)) {
+        if (Objects.isNull(username)) {
             headers.add("username", this.resourceServerProperties.getUsername());
-        }
-        else {
+        } else {
             headers.add("username", username);
         }
         return headers;
@@ -88,8 +87,8 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private OAuth2AuthenticatedPrincipal customConvert(Map<String, Object> claims) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if(claims.get("authorities") instanceof List){
-            for(Map<String,String> item : ((List<Map>)claims.get("authorities"))){
+        if (claims.get("authorities") instanceof List) {
+            for (Map<String, String> item : ((List<Map>) claims.get("authorities"))) {
                 authorities.add(new SimpleGrantedAuthority(item.get("authority")));
             }
         }
@@ -97,30 +96,30 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         return QROAuth2AuthenticatedPrincipal.builder()
                 .attributes(claims)
                 .authorities(authorities)
-                .uuid(UUID.fromString((String)claims.get("uuid")))
-                .name((String)claims.get("name"))
-                .fullName((String)claims.get("fullName"))
-                .userpic((String)claims.get("userpic"))
-                .email((String)claims.get("email"))
-                .locale((String)claims.get("locale"))
-                .provider(AuthProvider.valueOf((String)claims.get("provider")))
+                .uuid(UUID.fromString((String) claims.get("uuid")))
+                .name((String) claims.get("name"))
+                .fullName((String) claims.get("fullName"))
+                .userpic((String) claims.get("userpic"))
+                .email((String) claims.get("email"))
+                .locale((String) claims.get("locale"))
+                .provider(AuthProvider.valueOf((String) claims.get("provider")))
                 .gender(getGender(claims.get("gender")))
-                .phoneNumber((String)claims.get("phoneNumber"))
+                .phoneNumber((String) claims.get("phoneNumber"))
                 .active((Boolean) claims.get("active"))
                 .birthDay(getBirthDay(claims.get("birthDay")))
                 .build();
     }
 
     private LocalDate getBirthDay(Object birthDay) {
-        if(Objects.nonNull(birthDay)){
-            return LocalDate.parse((String)birthDay, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        if (Objects.nonNull(birthDay)) {
+            return LocalDate.parse((String) birthDay, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         return null;
     }
 
     private Gender getGender(Object gender) {
-        if(Objects.nonNull(gender)) {
-            return Gender.valueOf((String)gender);
+        if (Objects.nonNull(gender)) {
+            return Gender.valueOf((String) gender);
         }
         return Gender.NOT_DEFINED;
     }
