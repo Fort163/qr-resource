@@ -9,11 +9,11 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.quick.recording</groupId>
-	<artifactId>resource-service</artifactId>
+	<artifactId>qp-resource</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>resource-service</name>
-	<description>resource-service</description>
+	<name>qp-resource</name>
+	<description>qp-resource</description>
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2024.0.0</spring-cloud.version>
