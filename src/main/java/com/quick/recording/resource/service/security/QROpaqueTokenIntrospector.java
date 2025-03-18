@@ -67,16 +67,24 @@ public class QROpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private HttpHeaders requestHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        String username =
-                ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                        .getRequest().getHeader("username");
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        if (Objects.isNull(username)) {
-            headers.add("username", this.resourceServerProperties.getUsername());
-        } else {
-            headers.add("username", username);
+        try {
+            String username =
+                    ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                            .getRequest().getHeader("username");
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            if (Objects.isNull(username)) {
+                headers.add("username", this.resourceServerProperties.getUsername());
+            } else {
+                headers.add("username", username);
+            }
+            return headers;
         }
-        return headers;
+        catch (Exception e){
+            headers.add("username", this.resourceServerProperties.getUsername());
+            return headers;
+        }
+
     }
 
     private MultiValueMap<String, String> requestBody(String token) {
